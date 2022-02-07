@@ -20,9 +20,8 @@ def check_image_file(filename):
 
 class TrainingDataset(Dataset):
     def __init__(self, images_dir, image_size=256, scale_factor=4):
-        r""" Dataset loading base class.
-
-        Args:
+        """ Dataset loading base class.
+       :parameter
             images_dir (str): The directory address where the image is stored.
             image_size (int): Original high resolution image size. Default: 256.
             scale_factor (int): Coefficient of image scale. Default: 4.
@@ -56,12 +55,10 @@ class TrainingDataset(Dataset):
         return len(self.image_filenames)
 
 class ValidationDataset(Dataset):
-    def __init__(self, images_dir, image_size=256, scale_factor=4):
-        r""" Dataset loading base class.
-
-        Args:
+    def __init__(self, images_dir, scale_factor=4):
+        """ Dataset loading base class.
+       :parameter
             images_dir (str): The directory address where the image is stored.
-            image_size (int): Original high resolution image size. Default: 256.
             scale_factor (int): Coefficient of image scale. Default: 4.
         """
         super(ValidationDataset, self).__init__()

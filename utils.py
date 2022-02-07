@@ -1,5 +1,6 @@
 from scipy import signal
 import numpy as np
+
 def matlab_style_gauss2D(shape=(3,3),sigma=0.5):
   """
   2D gaussian mask - should give the same result as MATLAB's fspecial('gaussian',[shape],[sigma])

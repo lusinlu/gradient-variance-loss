@@ -8,7 +8,6 @@ import torch.optim as optim
 import torch.utils.data
 import torch.utils.data.distributed
 from tqdm import tqdm
-from loss_functions import tv_loss, SSIM
 from vdsr import VDSR
 from gradient_variance_loss import GradientVariance
 from torch.utils.tensorboard import SummaryWriter
@@ -26,7 +25,7 @@ parser.add_argument("--image-size", type=int, default=128,
 parser.add_argument("-b", "--batch-size", default=64, type=int,
                     metavar="N", help="mini-batch size.")
 parser.add_argument("--lr", type=float, default=0.1, help="Learning rate")
-parser.add_argument("--scale-factor", type=int, default=2, choices=[2, 3, 4, 8],
+parser.add_argument("--scale-factor", type=int, default=2, choices=[2, 3, 4],
                     help="super-resolution scaling factor")
 parser.add_argument("--weights",help="Path to pre-trained weights")
 parser.add_argument("--cuda", action="store_true", help="Enables cuda")
@@ -46,13 +45,12 @@ except OSError:
     pass
 
 if torch.cuda.is_available() and not args.cuda:
-    print("WARNING: CUDA device detected, you can run with --cuda")
+    print("WARNING: CUDA device available, consider run with --cuda")
 
 train_dataset = TrainingDataset(f"{args.dataroot}/train",
                                   image_size=args.image_size,
                                   scale_factor=args.scale_factor)
 val_dataset = ValidationDataset(f"{args.dataroot}/val",
-                                image_size=args.image_size,
                                 scale_factor=args.scale_factor)
 
 train_dataloader = torch.utils.data.DataLoader(train_dataset,
@@ -63,7 +61,7 @@ train_dataloader = torch.utils.data.DataLoader(train_dataset,
 val_dataloader = torch.utils.data.DataLoader(val_dataset,
                                              batch_size=1,
                                              shuffle=False,
-                                             pin_memory=True,
+                                             pin_memory=False,
                                              num_workers=4)
 
 device = torch.device("cuda:0" if args.cuda else "cpu")
@@ -76,7 +74,7 @@ if args.weights:
 criterion = nn.MSELoss().to(device)
 grad_criterion = GradientVariance(patch_size=args.loss_patch_size).to(device)
 optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=1e-4)
-scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[ 10, 20, 30, 40], gamma=0.1)
+scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[ 10, 20], gamma=0.1)
 
 best_psnr = 0.
 summary = SummaryWriter()
@@ -124,7 +122,6 @@ for epoch in range(args.epochs):
     print(f"Average PSNR: {avg_psnr / len(val_dataloader):.2f} dB.")
     summary.add_scalar('psnr/val',avg_psnr / len(val_dataloader), epoch)
 
-    # Dynamic adjustment of learning rate.
     scheduler.step()
 
     # Save model

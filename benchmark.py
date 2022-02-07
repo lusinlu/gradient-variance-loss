@@ -13,9 +13,7 @@ parser = argparse.ArgumentParser(description="VDSR model benchmark ")
 parser.add_argument("--dataroot", type=str, help="Path to datasets")
 parser.add_argument("-j", "--workers", default=4, type=int, metavar="N",
                     help="Number of data loading workers")
-parser.add_argument("--image-size", type=int, default=256,
-                    help="Size of the data crop (squared assumed)")
-parser.add_argument("--scale-factor", type=int, required=True, choices=[2, 3, 4, 8],
+parser.add_argument("--scale-factor", type=int, required=True, choices=[2, 3, 4],
                     help="Low to high resolution scaling factor.")
 parser.add_argument("--weights", type=str, required=True,
                     help="Path to weights.")
@@ -27,10 +25,9 @@ print(args)
 cudnn.benchmark = True
 
 if torch.cuda.is_available() and not args.cuda:
-    print("WARNING: CUDA device detected, you can run with --cuda")
+    print("WARNING: CUDA device available, consider run with --cuda")
 
 dataset = ValidationDataset(f"{args.dataroot}/val",
-                            image_size=args.image_size,
                             scale_factor=args.scale_factor)
 
 dataloader = torch.utils.data.DataLoader(dataset,
@@ -41,6 +38,7 @@ dataloader = torch.utils.data.DataLoader(dataset,
 
 device = torch.device("cuda:0" if args.cuda else "cpu")
 
+# define model and load pretrained weights
 model = VDSR().to(device)
 model.load_state_dict(torch.load(args.weights, map_location=device))
 criterion = nn.MSELoss().to(device)
