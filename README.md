@@ -29,7 +29,7 @@ textures with perceptual-pleasant details.
 ### Performance
 Public benchmark test results and DIV2K validation results (PSNR(dB) / SSIM).
 
-<img src="https://github.com/lusinlu/skipnet_evaluation/blob/main/figures/params_vs_top1.png" width="300" height="250">
+<img src="https://github.com/lusinlu/gradient_variance_loss/blob/main/table_results.png" width="750" height="250">
 
 ## Citation
 If you find the code useful for your research, please consider citing our works
