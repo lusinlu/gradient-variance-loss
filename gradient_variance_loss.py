@@ -12,7 +12,7 @@ class GradientVariance(nn.Module):
     def __init__(self, patch_size, cpu=False):
         super(GradientVariance, self).__init__()
         self.patch_size = patch_size
-        # Laplacian kernel for the gradient map calculation
+        # Sobel kernel for the gradient map calculation
         self.kernel_x = torch.FloatTensor([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]]).unsqueeze(0).unsqueeze(0)
         self.kernel_y = torch.FloatTensor([[1, 2, 1], [0, 0, 0], [-1, -2, -1]]).unsqueeze(0).unsqueeze(0)
         if not cpu:
